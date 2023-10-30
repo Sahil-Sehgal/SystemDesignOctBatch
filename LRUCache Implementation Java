@@ -1,0 +1,115 @@
+class LRUCache {
+
+       Map<Integer, Node> cache = null;
+    int capacitySize=0;
+    private  Node head= new Node(null,null);
+    private  Node tail=new Node(null,null);
+
+    public LRUCache(int capacity) {
+        cache = new HashMap<>(capacity);
+        capacitySize=capacity;
+    }
+
+    public int get(int key) {
+        if(cache.containsKey(key))
+        {
+            Node requiredEle= (Node) cache.get(key);
+            removeElement(requiredEle);
+            addAtFirstPos(requiredEle);
+            return (int)requiredEle.value;
+
+        }
+        return -1;
+    }
+
+    public void put(int key, int value) {
+         if(cache.containsKey(key))
+        {
+             Node existingNode=cache.get(key);
+             existingNode.value=value;
+             cache.put(key,existingNode);
+              removeElement(existingNode);
+             addAtFirstPos(existingNode);
+             return;
+        }
+        if (cache.size() >=capacitySize) {
+            Node lastElement = removeFromLast();
+            cache.remove(lastElement.key);
+//           cache.
+            Node<Integer,Integer> newEle= new Node<>(key,value);
+            addAtFirstPos(newEle);
+            cache.put(key,newEle);
+            return;
+
+        }
+        Node<Integer,Integer> newEle = new Node<>(key,value);
+        addAtFirstPos(newEle);
+        cache.put(key,newEle);
+
+    }
+
+
+    void addAtFirstPos(Node node) {
+        if(head.next!=null) {
+            Node nodeJustAfterHead = head.next;
+            node.next = nodeJustAfterHead;
+            nodeJustAfterHead.prev=node;
+            head.next = node;
+            node.prev = head;
+            return;
+        }
+        //first element addition
+        head.next=node;
+        node.prev=head;
+        node.next=tail;
+        tail.prev=node;
+
+
+
+    }
+    void removeElement(Node node) {
+        Node elementBeforeNode = node.prev;
+        Node elementAfterNode = node.next;
+        elementBeforeNode.next = elementAfterNode;
+        elementAfterNode.prev = elementBeforeNode;
+
+    }
+    Node removeFromLast() {
+        Node lastElement = tail.prev;
+        Node elementBeforeLastElement = lastElement.prev;
+        lastElement.next = tail;
+        tail.prev = elementBeforeLastElement;
+        return lastElement;
+
+    }
+
+    class Node<T,K> {
+        Node prev=null;
+        Node next=null;
+
+        T value;
+        K key;
+
+        Node( K key,T value) {
+           
+            this.key=key;
+             this.value = value;
+        }
+    }
+
+//    public static void main(String[] args) {
+//        LRUCache lruCache = new LRUCache(2);
+//        lruCache.put(1,0);
+//        lruCache.put(2,2);
+//        lruCache.get(1);
+//        lruCache.put(3,3);
+//        lruCache.get(2);
+//        lruCache.put(4,4);
+//        lruCache.get(1);
+//        lruCache.get(3);
+//        lruCache.get(4);
+//
+//
+//    }
+
+}
